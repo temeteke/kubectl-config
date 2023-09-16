@@ -1,20 +1,35 @@
 BIN_DIR := ~/.local/bin
 
+HELMFILE_VERSION := $(shell url=$$(curl -s -w '%{redirect_url}' https://github.com/helmfile/helmfile/releases/latest); echo $${url##*v})
+HELMFILE_TARGET := linux_amd64
+HELMFILE_TAR_NAME := helmfile_$(HELMFILE_VERSION)_$(HELMFILE_TARGET)
+HELMFILE_TAR_FILE := $(HELMFILE_TAR_NAME).tar.gz
+HELMFILE_TAR_URL := https://github.com/helmfile/helmfile/releases/download/v$(HELMFILE_VERSION)/$(HELMFILE_TAR_FILE)
+
 .PHONY: all clean install uninstall
-all: kubectl
+all: kubectl helmfile
 
 kubectl:
-	curl -LO "https://dl.k8s.io/release/$$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+	curl -LOR "https://dl.k8s.io/release/$$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 	chmod +x $@
+
+helmfile: $(HELMFILE_TAR_FILE)
+	tar -xf $< helmfile
+
+$(HELMFILE_TAR_FILE):
+	curl -LR -o $@ $(HELMFILE_TAR_URL)
 
 clean:
 	rm -f kubectl
+	rm -f helmfile $(HELMFILE_TAR_FILE)
 
-install: kubectl
+install: kubectl helmfile
 	mkdir -p $(BIN_DIR)
 	cp $^ $(BIN_DIR)
 	curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | HELM_INSTALL_DIR=$(BIN_DIR) USE_SUDO=false bash
+	helmfile init --force
 
 uninstall:
-	rm $(BIN_DIR)/kubectl
-	rm $(BIN_DIR)/helm
+	rm -f $(BIN_DIR)/kubectl
+	rm -f $(BIN_DIR)/helm
+	rm -f $(BIN_DIR)/helmfile
