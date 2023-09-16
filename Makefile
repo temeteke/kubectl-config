@@ -25,19 +25,20 @@ clean:
 
 install: install-kubectl install-helm install-helmfile
 
-install-kubectl: kubectl
-	mkdir -p $(BIN_DIR)
-	cp -a $^ $(BIN_DIR)
+install-kubectl: kubectl $(BIN_DIR)
+	cp -a kubectl $(BIN_DIR)
 
-install-helm:
+install-helm: $(BIN_DIR)
 	curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | HELM_INSTALL_DIR=$(BIN_DIR) USE_SUDO=false bash
 
-install-helmfile: helmfile
-	mkdir -p $(BIN_DIR)
-	cp -a $^ $(BIN_DIR)
+install-helmfile: helmfile $(BIN_DIR)
+	cp -a helmfile $(BIN_DIR)
 	helmfile init --force
 
 uninstall:
 	rm -f $(BIN_DIR)/kubectl
 	rm -f $(BIN_DIR)/helm
 	rm -f $(BIN_DIR)/helmfile
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
