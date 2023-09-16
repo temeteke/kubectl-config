@@ -13,7 +13,7 @@ kubectl:
 	curl -LOR "https://dl.k8s.io/release/$$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 	chmod +x $@
 
-helmfile: $(HELMFILE_TAR_FILE)
+helmfile: | $(HELMFILE_TAR_FILE)
 	tar -xf $< helmfile
 
 $(HELMFILE_TAR_FILE):
