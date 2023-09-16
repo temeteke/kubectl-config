@@ -1,6 +1,6 @@
 BIN_DIR := ~/.local/bin
 
-HELMFILE_VERSION := $(shell url=$$(curl -s -w '%{redirect_url}' https://github.com/helmfile/helmfile/releases/latest); echo $${url##*v})
+HELMFILE_VERSION := $(subst https://github.com/helmfile/helmfile/releases/tag/v,,$(shell curl -s -w '%{redirect_url}' https://github.com/helmfile/helmfile/releases/latest))
 HELMFILE_TARGET := linux_amd64
 HELMFILE_TAR_NAME := helmfile_$(HELMFILE_VERSION)_$(HELMFILE_TARGET)
 HELMFILE_TAR_FILE := $(HELMFILE_TAR_NAME).tar.gz
