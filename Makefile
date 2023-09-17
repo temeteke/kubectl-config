@@ -14,7 +14,7 @@ kubectl:
 	chmod +x $@
 
 helmfile: | $(HELMFILE_TAR_FILE)
-	tar -xf $< helmfile
+	tar -xf $(HELMFILE_TAR_FILE) helmfile
 
 $(HELMFILE_TAR_FILE):
 	curl -LR -o $@ $(HELMFILE_TAR_URL)
