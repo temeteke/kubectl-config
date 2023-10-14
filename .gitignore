@@ -1,3 +1,4 @@
 kubectl
+kustomize
 helmfile
 helmfile*.tar.gz

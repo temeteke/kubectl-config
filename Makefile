@@ -7,11 +7,14 @@ HELMFILE_TAR_FILE := $(HELMFILE_TAR_NAME).tar.gz
 HELMFILE_TAR_URL := https://github.com/helmfile/helmfile/releases/download/v$(HELMFILE_VERSION)/$(HELMFILE_TAR_FILE)
 
 .PHONY: all clean install uninstall
-all: kubectl helmfile
+all: kubectl kustomize helmfile
 
 kubectl:
 	curl -LOR "https://dl.k8s.io/release/$$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 	chmod +x $@
+
+kustomize:
+	curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
 
 helmfile: | $(HELMFILE_TAR_FILE)
 	tar -xf $(HELMFILE_TAR_FILE) helmfile
@@ -23,10 +26,13 @@ clean:
 	rm -f kubectl
 	rm -f helmfile $(HELMFILE_TAR_FILE)
 
-install: install-kubectl install-helm install-helmfile
+install: install-kubectl install-kustomize install-helm install-helmfile
 
 install-kubectl: kubectl $(BIN_DIR)
 	cp -a kubectl $(BIN_DIR)
+
+install-kustomize: kustomize $(BIN_DIR)
+	cp -a kustomize $(BIN_DIR)
 
 install-helm: $(BIN_DIR)
 	curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | HELM_INSTALL_DIR=$(BIN_DIR) USE_SUDO=false bash
@@ -37,6 +43,7 @@ install-helmfile: helmfile $(BIN_DIR)
 
 uninstall:
 	rm -f $(BIN_DIR)/kubectl
+	rm -f $(BIN_DIR)/kustomize
 	rm -f $(BIN_DIR)/helm
 	rm -f $(BIN_DIR)/helmfile
 
