@@ -1,7 +1,16 @@
-BIN_DIR := ~/.local/bin
+BIN_DIR ?= ~/.local/bin
+KUBECTL_VERSION ?= $(subst v,,$(shell curl -LS https://dl.k8s.io/release/stable.txt))
+HELMFILE_VERSION ?= $(subst https://github.com/helmfile/helmfile/releases/tag/v,,$(shell curl -s -w '%{redirect_url}' https://github.com/helmfile/helmfile/releases/latest))
 
-HELMFILE_VERSION := $(subst https://github.com/helmfile/helmfile/releases/tag/v,,$(shell curl -s -w '%{redirect_url}' https://github.com/helmfile/helmfile/releases/latest))
-HELMFILE_TARGET := linux_amd64
+HOST_ARCH := $(shell uname -m)
+ifeq ($(HOST_ARCH), aarch64)
+	KUBECTL_TARGET := arm64
+	HELMFILE_TARGET := linux_arm64
+else
+	KUBECTL_TARGET := amd64
+	HELMFILE_TARGET := linux_amd64
+endif
+
 HELMFILE_TAR_NAME := helmfile_$(HELMFILE_VERSION)_$(HELMFILE_TARGET)
 HELMFILE_TAR_FILE := $(HELMFILE_TAR_NAME).tar.gz
 HELMFILE_TAR_URL := https://github.com/helmfile/helmfile/releases/download/v$(HELMFILE_VERSION)/$(HELMFILE_TAR_FILE)
@@ -10,7 +19,7 @@ HELMFILE_TAR_URL := https://github.com/helmfile/helmfile/releases/download/v$(HE
 all: kubectl kustomize helmfile
 
 kubectl:
-	curl -LOR "https://dl.k8s.io/release/$$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+	curl -LOR "https://dl.k8s.io/release/v$(KUBECTL_VERSION)/bin/linux/$(KUBECTL_TARGET)/kubectl"
 	chmod +x $@
 
 kustomize:
@@ -24,6 +33,7 @@ $(HELMFILE_TAR_FILE):
 
 clean:
 	rm -f kubectl
+	rm -f kustomize
 	rm -f helmfile $(HELMFILE_TAR_FILE)
 
 install: install-kubectl install-kustomize install-helm install-helmfile
