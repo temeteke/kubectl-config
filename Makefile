@@ -36,7 +36,7 @@ clean:
 	rm -f kustomize
 	rm -f helmfile $(HELMFILE_TAR_FILE)
 
-install: install-kubectl install-kustomize install-helm install-helmfile
+install: install-kubectl install-kustomize install-helm install-helmfile install-carvel
 
 install-kubectl: kubectl $(BIN_DIR)
 	cp -a kubectl $(BIN_DIR)
@@ -51,11 +51,15 @@ install-helmfile: helmfile $(BIN_DIR)
 	cp -a helmfile $(BIN_DIR)
 	helmfile init --force
 
+install-carvel: $(BIN_DIR)
+	curl -L https://carvel.dev/install.sh | K14SIO_INSTALL_BIN_DIR=$(BIN_DIR) bash
+
 uninstall:
 	rm -f $(BIN_DIR)/kubectl
 	rm -f $(BIN_DIR)/kustomize
 	rm -f $(BIN_DIR)/helm
 	rm -f $(BIN_DIR)/helmfile
+	rm -f $(BIN_DIR)/ytt $(BIN_DIR)/imgpkg $(BIN_DIR)/kbld $(BIN_DIR)/kapp $(BIN_DIR)/kwt $(BIN_DIR)/vendir $(BIN_DIR)/kctrl
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
