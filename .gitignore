@@ -3,3 +3,4 @@ kustomize
 helmfile
 helmfile*.tar.gz
 ytt
+krew-*
