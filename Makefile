@@ -34,7 +34,7 @@ kubectl:
 kustomize:
 	curl -fsSL https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
 
-helmfile: | $(HELMFILE_TAR_FILE)
+helmfile: $(HELMFILE_TAR_FILE)
 	tar -xf $(HELMFILE_TAR_FILE) helmfile
 
 $(HELMFILE_TAR_FILE):
