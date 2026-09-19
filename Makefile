@@ -25,6 +25,7 @@ KREW_TAR_FILE := $(KREW).tar.gz
 KREW_TAR_URL := https://github.com/kubernetes-sigs/krew/releases/latest/download/$(KREW_TAR_FILE)
 
 .PHONY: all clean install uninstall
+.PHONY: install-kubectl install-kustomize install-helm install-helmfile install-ytt install-krew
 all: kubectl kustomize helmfile ytt $(KREW)
 
 kubectl:
