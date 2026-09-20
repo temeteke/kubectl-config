@@ -24,7 +24,7 @@ KREW := krew-$(KREW_TARGET)
 KREW_TAR_FILE := $(KREW).tar.gz
 KREW_TAR_URL := https://github.com/kubernetes-sigs/krew/releases/latest/download/$(KREW_TAR_FILE)
 
-.PHONY: all clean install uninstall
+.PHONY: all clean install install-bin uninstall uninstall-bin
 .PHONY: install-kubectl install-kustomize install-helm install-helmfile install-ytt install-krew
 all: kubectl kustomize helmfile ytt $(KREW)
 
@@ -58,7 +58,9 @@ clean:
 	rm -f ytt
 	rm -f $(KREW) $(KREW_TAR_FILE)
 
-install: install-kubectl install-kustomize install-helm install-helmfile install-ytt install-krew
+install: install-bin
+
+install-bin: install-kubectl install-kustomize install-helm install-helmfile install-ytt install-krew
 
 install-kubectl: kubectl $(BIN_DIR)
 	cp -a kubectl $(BIN_DIR)
@@ -79,7 +81,9 @@ install-ytt: ytt $(BIN_DIR)
 install-krew: $(KREW)
 	./$(KREW) install krew
 
-uninstall:
+uninstall: uninstall-bin
+
+uninstall-bin:
 	rm -f $(BIN_DIR)/kubectl
 	rm -f $(BIN_DIR)/kustomize
 	rm -f $(BIN_DIR)/helm
